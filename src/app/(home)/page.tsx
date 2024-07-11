@@ -1,10 +1,22 @@
-import Fetcher from "../../components/Fetcher";
-import styles from "./styles.module.css";
+import FetchTest from "../../components/FetchTest";
+import PackageFinder from "../../components/PackageFinder/PacakageFinder";
+import { getScriptGenInfo } from "../../service/scriptService";
 
-export default function Home() {
+export default async function Home() {
+  // try {
+  //   const scriptInfo = await getScriptGenInfo();
+  //   // console.log({ scriptInfo });
+  // } catch (e) {}
+
   return (
-    <div className={styles.controlContainer}>
-      <Fetcher />
+    <div className="home-grid">
+      <div className="title-container">
+        <h1>Easy Node</h1>
+      </div>
+
+      <div className="package-finder-container">
+        <PackageFinder />
+      </div>
     </div>
   );
 }

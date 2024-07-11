@@ -1,9 +1,27 @@
 "use server";
 
-import { ENDPOINT } from "../constants/paths";
-import { getCookie, setCookie } from "./cookieManager";
+import { ENDPOINT } from "../../constants/paths";
+import { getCookie, setCookie } from "../cookieManager";
 
-export const getAuthHeader = async () => {
+type AuthHeaders = {
+  [key: string]: string;
+};
+
+export const getApiRequestInit = async () => {
+  const authHeaders: AuthHeaders = await createAuthHeader();
+
+  const init: RequestInit = {
+    mode: "cors",
+    credentials: "include",
+    headers: {
+      ...authHeaders,
+    },
+  };
+
+  return init;
+};
+
+export const createAuthHeader = async () => {
   let cookie = await getCookie({ cookie: "apiToken" });
 
   if (!cookie) {

@@ -1,26 +1,28 @@
 "use server";
 
-import { getAuthHeader, refreshApiTokenCookie } from "../lib/requestHandler";
+import {
+  getApiRequestInit,
+  refreshApiTokenCookie,
+} from "../lib/fetch/apiAuthHandler";
 import { ENDPOINT } from "../constants/paths";
+import { ScriptRequest } from "../types/scriptRequest";
 
 type PostScriptParams = {
   type: "express";
 };
 
 export const getScript = async () => {
-  const res = await fetch(ENDPOINT + "/script", {
+  const reqInit: RequestInit = {
+    ...(await getApiRequestInit()),
     method: "GET",
-    mode: "cors",
-    credentials: "include",
-    headers: {
-      ...(await getAuthHeader()),
-    },
-  });
+  };
+
+  const res = await fetch(ENDPOINT + "/script", reqInit);
 
   return await res.json();
 };
 
-export const postScript = async (params: PostScriptParams) => {
+export const postScript = async (params: ScriptRequest) => {
   let res = await scriptFetch(params);
 
   if (res.status === 403) {
@@ -35,15 +37,29 @@ export const postScript = async (params: PostScriptParams) => {
   return null;
 };
 
-const scriptFetch = async (params: PostScriptParams) => {
-  return fetch(ENDPOINT + "/script", {
+const scriptFetch = async (params: ScriptRequest) => {
+  const baseReqInit = await getApiRequestInit();
+
+  const reqInit: RequestInit = {
+    ...baseReqInit,
     method: "POST",
-    mode: "cors",
-    credentials: "include",
     body: JSON.stringify(params),
     headers: {
-      ...(await getAuthHeader()),
+      ...baseReqInit.headers,
       "Content-Type": "application/json",
     },
-  });
+  };
+
+  return fetch(ENDPOINT + "/script", reqInit);
+};
+
+export const getScriptGenInfo = async () => {
+  const reqInit: RequestInit = {
+    ...(await getApiRequestInit()),
+    method: "GET",
+  };
+
+  const res = await fetch(ENDPOINT + "/script/info", reqInit);
+
+  return await res.json();
 };
