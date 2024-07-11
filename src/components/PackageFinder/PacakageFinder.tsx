@@ -1,16 +1,19 @@
 "use client";
 
 import PackageSearch from "./PackageSearch";
-import { useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import ImportPreview from "./ImportPreview";
-import ExportControls from "./ExportControls";
 
-export default function PackageFinder() {
-  const [dependencies, setDependencies] = useState<Set<string>>(new Set());
-  const [devDependencies, setDevDependencies] = useState<Set<string>>(
-    new Set()
-  );
+type PacakageFinderProps = {
+  setDependencies: Dispatch<SetStateAction<Set<string>>>;
+  setDevDependencies: Dispatch<SetStateAction<Set<string>>>;
+  dependencies: Set<string>;
+  devDependencies: Set<string>;
+};
 
+export default function PackageFinder(props: PacakageFinderProps) {
+  const { dependencies, devDependencies, setDependencies, setDevDependencies } =
+    props;
   return (
     <div className="pf-grid">
       <div className="pf-search-cell">
@@ -25,13 +28,6 @@ export default function PackageFinder() {
           <ImportPreview title="Dependencies" content={dependencies} />
           <ImportPreview title="Dev Dependencies" content={devDependencies} />
         </div>
-      </div>
-
-      <div className="pf-controls-cell">
-        <ExportControls
-          dependencies={dependencies}
-          devDependencies={devDependencies}
-        />
       </div>
     </div>
   );

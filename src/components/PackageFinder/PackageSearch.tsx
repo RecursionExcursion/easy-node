@@ -96,7 +96,7 @@ export default function PackageSearch(props: PackageSearchProps) {
     resetResults();
   };
 
-  const toggleText = toggleTs ? "Include Ts @types" : "Omit Ts @types";
+  const toggleText = toggleTs ? "Include @types" : "Omit @types";
   const toggleStyles = toggleTs ? "pf-toggle-on" : "pf-toggle-off";
 
   return (
@@ -108,13 +108,6 @@ export default function PackageSearch(props: PackageSearchProps) {
         >
           {searchMode === "prod" ? "Production" : "Development"}
         </button>
-        <input
-          type="text"
-          placeholder="Search for a package"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <button onClick={handleSearch}>Search</button>
         <button
           className={toggleStyles}
           onClick={() => setToggleTs(!toggleTs)}
@@ -122,6 +115,13 @@ export default function PackageSearch(props: PackageSearchProps) {
         >
           {toggleText}
         </button>
+        <input
+          type="text"
+          placeholder="Search for a package"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button onClick={handleSearch}>Search</button>
       </div>
       {results.find((res) => res != "") && (
         <Modal>

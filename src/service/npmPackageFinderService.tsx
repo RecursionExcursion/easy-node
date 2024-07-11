@@ -1,5 +1,7 @@
 "use server";
 
+import endpoints from "../constants/endpoints";
+
 export const npmPackageExists = async (
   packageName: string
 ): Promise<boolean> => {
@@ -8,7 +10,7 @@ export const npmPackageExists = async (
 };
 
 const fetchNpmPackage = async (packageName: string) => {
-  const res = await fetch(`https://registry.npmjs.org/${packageName}`);
+  const res = await fetch(endpoints.npmRegistry + packageName);
 
   if (res.ok) {
     return await res.json();

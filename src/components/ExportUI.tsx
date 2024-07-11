@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { FaCopy } from "react-icons/fa6";
-import { createNodePackageCliCommand } from "../../lib/cliCommandGenerator";
-import { ScriptRequest } from "../../types/scriptRequest";
-import { postCliCommand } from "../../service/cliCommandService";
-import { postScript } from "../../service/scriptService";
-import downloadToBrowser from "../../lib/downloadToBrowser";
+import { createNodePackageCliCommand } from "../lib/cliCommandGenerator";
+import { ScriptRequest } from "../types/scriptRequest";
+import { postCliCommand } from "../service/cliCommandService";
+import { postScript } from "../service/scriptService";
+import downloadToBrowser from "../lib/downloadToBrowser";
 
 type ExportControlsProps = {
   dependencies: Set<string>;
@@ -36,7 +36,6 @@ export default function ExportControls(props: ExportControlsProps) {
 
     const commands = await postCliCommand(request);
 
-    console.log(commands);
 
     if (!commands || commands === null) {
       //TODO Show feedback to user
@@ -68,12 +67,12 @@ export default function ExportControls(props: ExportControlsProps) {
     downloadToBrowser(script, fileName);
   };
 
-  // const handleCopyCliCommand = (type: "prod" | "dev") => {
-  //   navigator.clipboard.writeText(command);
-  // };
+  const handleCopyCliCommand = (command: string) => {
+    navigator.clipboard.writeText(command);
+  };
 
   return (
-    <div className="pf-controls-container">
+    <div className="export-controls-container">
       <div className="button-container">
         <button onClick={handleExportToScriptClick} className="controls-button">
           Export to script
@@ -83,11 +82,18 @@ export default function ExportControls(props: ExportControlsProps) {
         </button>
       </div>
       {commands.length > 0 && (
-        <pre className="code-pre">
+        <div className="commands-parent">
           {commands.map((command, index) => (
-            <code key={index}>{command}</code>
+            <div key={command + index} className="command-container">
+              <button onClick={() => handleCopyCliCommand(command)}>
+                <FaCopy />
+              </button>
+              <pre className="code-pre">
+                <code key={index}>{command}</code>
+              </pre>
+            </div>
           ))}
-        </pre>
+        </div>
       )}
     </div>
   );

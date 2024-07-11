@@ -1,6 +1,6 @@
 "use server";
 
-import { ENDPOINT } from "../../constants/paths";
+import endpoints from "../../constants/endpoints";
 import { getCookie, setCookie } from "../cookieManager";
 
 type AuthHeaders = {
@@ -37,9 +37,7 @@ export const createAuthHeader = async () => {
 export const fetchApiToken = async () => {
   const apiKey = process.env.API_KEY ?? "";
 
-  const url = ENDPOINT + "/auth";
-
-  const res = await fetch(url, {
+  const res = await fetch(endpoints.auth, {
     method: "GET",
     mode: "cors",
     credentials: "include",

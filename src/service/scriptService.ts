@@ -4,7 +4,7 @@ import {
   getApiRequestInit,
   refreshApiTokenCookie,
 } from "../lib/fetch/apiAuthHandler";
-import { ENDPOINT } from "../constants/paths";
+import endpoints from "../constants/endpoints";
 import { ScriptRequest } from "../types/scriptRequest";
 
 type PostScriptParams = {
@@ -17,7 +17,7 @@ export const getScript = async () => {
     method: "GET",
   };
 
-  const res = await fetch(ENDPOINT + "/script", reqInit);
+  const res = await fetch(endpoints.script, reqInit);
 
   return await res.json();
 };
@@ -50,7 +50,7 @@ const scriptFetch = async (params: ScriptRequest) => {
     },
   };
 
-  return fetch(ENDPOINT + "/script", reqInit);
+  return fetch(endpoints.script, reqInit);
 };
 
 export const getScriptGenInfo = async () => {
@@ -59,7 +59,7 @@ export const getScriptGenInfo = async () => {
     method: "GET",
   };
 
-  const res = await fetch(ENDPOINT + "/script/info", reqInit);
+  const res = await fetch(endpoints.scriptServices, reqInit);
 
   return await res.json();
 };

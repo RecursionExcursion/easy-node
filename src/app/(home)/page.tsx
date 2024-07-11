@@ -1,22 +1,21 @@
-import FetchTest from "../../components/FetchTest";
-import PackageFinder from "../../components/PackageFinder/PacakageFinder";
+import { redirect } from "next/dist/server/api-utils";
+import EasyNodeUI from "../../components/EasyNodeUI";
 import { getScriptGenInfo } from "../../service/scriptService";
 
 export default async function Home() {
-  // try {
-  //   const scriptInfo = await getScriptGenInfo();
-  //   // console.log({ scriptInfo });
-  // } catch (e) {}
+  let services;
+  try {
+    services = await getScriptGenInfo();
+  } catch (e) {
+    return null;
+  }
 
   return (
     <div className="home-grid">
       <div className="title-container">
         <h1>Easy Node</h1>
       </div>
-
-      <div className="package-finder-container">
-        <PackageFinder />
-      </div>
+      <EasyNodeUI services={services} />
     </div>
   );
 }

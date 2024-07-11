@@ -1,13 +1,11 @@
 "use server";
 
-import { ENDPOINT } from "../constants/paths";
+import endpoints from "../constants/endpoints";
 import { postRequestInit } from "../lib/fetch/requestInitalizer";
 import { ScriptRequest } from "../types/scriptRequest";
 
 export const postCliCommand = async (params: ScriptRequest) => {
   const res = await cliFetch(params);
-
-  console.log({ res });
 
   if (!res.ok) {
     return null;
@@ -20,7 +18,7 @@ export const postCliCommand = async (params: ScriptRequest) => {
 
 const cliFetch = async (params: ScriptRequest) => {
   const init = await postRequestInit(params);
-  return await fetch(ENDPOINT + "/script/cli", init);
+  return await fetch(endpoints.scriptCli, init);
 };
 
 const isStringArray = (arr: any): arr is string[] => {
