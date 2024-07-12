@@ -1,9 +1,16 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useMemo,
+  useState,
+} from "react";
 import { npmPackageExists } from "../../service/npmPackageFinderService";
 import { tsTypesPrefix } from "../../constants/npmFInder";
-import useModal from "../../hooks/useModal";
+
+import { debounce } from "../../lib/util";
 
 type PackageSearchProps = {
   setDependencies: Dispatch<SetStateAction<Set<string>>>;
@@ -13,7 +20,7 @@ type PackageSearchProps = {
 export default function PackageSearch(props: PackageSearchProps) {
   const { setDependencies, setDevDependencies } = props;
 
-  const { Modal } = useModal({});
+  // const { Modal } = useModal({});
 
   const [search, setSearch] = useState("");
   const [toggleTs, setToggleTs] = useState(false);
@@ -28,7 +35,7 @@ export default function PackageSearch(props: PackageSearchProps) {
     setResults(new Array(2).fill(""));
   };
 
-  const setProdDependency = (packageName: string) => {
+  const setProdResult = (packageName: string) => {
     setResults((prev) => {
       const updatedArray = [...prev];
       updatedArray[0] = packageName;
@@ -36,7 +43,7 @@ export default function PackageSearch(props: PackageSearchProps) {
     });
   };
 
-  const setDevDependency = (packageName: string) => {
+  const setDevResult = (packageName: string) => {
     setResults((prev) => {
       const updatedArray = [...prev];
       updatedArray[1] = packageName;
@@ -44,36 +51,51 @@ export default function PackageSearch(props: PackageSearchProps) {
     });
   };
 
-  const handleSearch = async () => {
-    const exists = await npmPackageExists(search);
+  const debouncedNpmSearch = useMemo(() => {
+    const searchForNpmLibrary = async (
+      searchString: string,
+      includeTsTypes = false
+    ) => {
+      const exists = await npmPackageExists(searchString);
 
-    if (!exists) {
-      alert(`Package \"${search}\" not found`);
-      return;
-    }
-
-    if (searchMode === "dev") {
-      setDevDependency(search);
-      resetSearch();
-      return;
-    }
-
-    setProdDependency(search);
-
-    if (toggleTs) {
-      const typesSearch = tsTypesPrefix + search;
-
-      const typesExists = await npmPackageExists(typesSearch);
-
-      if (!typesExists) {
-        alert(`Package \"${typesSearch}\" not found`);
+      if (!exists) {
         return;
       }
 
-      setDevDependency(typesSearch);
-    }
+      if (searchMode === "dev") {
+        setDevResult(searchString);
+        resetSearch();
+        return;
+      }
+      setProdResult(searchString);
+      if (includeTsTypes) {
+        const typesSearch = tsTypesPrefix + searchString;
+        const typesExists = await npmPackageExists(typesSearch);
+        if (!typesExists) {
+          setDevResult("");
+          return;
+        }
+        setDevResult(typesSearch);
+      } else {
+        setDevResult("");
+      }
+    };
 
-    resetSearch();
+    return debounce(searchForNpmLibrary, 1000);
+  }, [searchMode]);
+
+  const handleSearch = async (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setSearch(value);
+    debouncedNpmSearch(value, toggleTs);
+  };
+
+  const handleToggleTsClick = () => {
+    const next = !toggleTs;
+    setToggleTs(next);
+    if (searchMode === "prod") {
+      debouncedNpmSearch(search, next);
+    }
   };
 
   const handleAddPacakagesClick = () => {
@@ -92,47 +114,55 @@ export default function PackageSearch(props: PackageSearchProps) {
         return updatedSet;
       });
     }
-
+    setSearch("");
     resetResults();
   };
 
   const toggleText = toggleTs ? "Include @types" : "Omit @types";
   const toggleStyles = toggleTs ? "pf-toggle-on" : "pf-toggle-off";
+  const resultsFound = results.find((res) => res != "");
 
   return (
     <div className="pf-search">
       <div className="pf-search-container">
-        Package Type:
-        <button
-          onClick={() => setSearchMode(searchMode === "prod" ? "dev" : "prod")}
+        <div className="search-controls">
+          Package Type:
+          <button
+            onClick={() =>
+              setSearchMode(searchMode === "prod" ? "dev" : "prod")
+            }
+          >
+            {searchMode === "prod" ? "Production" : "Development"}
+          </button>
+          <button
+            className={toggleStyles}
+            onClick={handleToggleTsClick}
+            disabled={searchMode === "dev"}
+          >
+            {toggleText}
+          </button>
+          <input
+            type="text"
+            placeholder="Search for a package"
+            value={search}
+            onChange={handleSearch}
+          />
+          <button onClick={handleAddPacakagesClick}>Confirm</button>
+        </div>
+        <div
+          className={`results-container${resultsFound ? "-found" : "-none"}`}
         >
-          {searchMode === "prod" ? "Production" : "Development"}
-        </button>
-        <button
-          className={toggleStyles}
-          onClick={() => setToggleTs(!toggleTs)}
-          disabled={searchMode === "dev"}
-        >
-          {toggleText}
-        </button>
-        <input
-          type="text"
-          placeholder="Search for a package"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <button onClick={handleSearch}>Search</button>
-      </div>
-      {results.find((res) => res != "") && (
-        <Modal>
-          <div className="results-container">
+          Results:
+          {resultsFound ? (
             <span>
-              Found packages {results.filter((res) => res != "").join(" and ")}
+              Found package(s){" "}
+              {results.filter((res) => res != "").join(" and ")}
             </span>
-            <button onClick={handleAddPacakagesClick}>Add</button>
-          </div>
-        </Modal>
-      )}
+          ) : (
+            <span> No Results Found</span>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

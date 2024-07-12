@@ -5,7 +5,7 @@ import {
   refreshApiTokenCookie,
 } from "../lib/fetch/apiAuthHandler";
 import endpoints from "../constants/endpoints";
-import { ScriptRequest } from "../types/scriptRequest";
+import { ScriptRequest } from "../types/apiResponse";
 
 type PostScriptParams = {
   type: "express";

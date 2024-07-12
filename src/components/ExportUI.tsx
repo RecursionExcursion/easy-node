@@ -2,19 +2,23 @@
 
 import { useState } from "react";
 import { FaCopy } from "react-icons/fa6";
-import { createNodePackageCliCommand } from "../lib/cliCommandGenerator";
-import { ScriptRequest } from "../types/scriptRequest";
+import { ScriptRequest } from "../types/apiResponse";
 import { postCliCommand } from "../service/cliCommandService";
 import { postScript } from "../service/scriptService";
 import downloadToBrowser from "../lib/downloadToBrowser";
 
 type ExportControlsProps = {
+  framework?: string;
+  runtime?: string;
   dependencies: Set<string>;
   devDependencies: Set<string>;
 };
 
 export default function ExportControls(props: ExportControlsProps) {
-  const { dependencies, devDependencies } = props;
+  const { dependencies, devDependencies, framework, runtime } = props;
+
+  console.log(framework, runtime);
+  
 
   const [commands, setCommands] = useState<string[]>([]);
 
@@ -35,7 +39,6 @@ export default function ExportControls(props: ExportControlsProps) {
     }
 
     const commands = await postCliCommand(request);
-
 
     if (!commands || commands === null) {
       //TODO Show feedback to user

@@ -1,58 +1,59 @@
 .export-controls-container {
-    grid-area: export;
-    height: 100%;
+  grid-area: export;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  justify-content: flex-start;
+  align-items: center;
+
+  .button-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    .controls-button {
+      @include base-button;
+      font-size: large;
+      padding: 1rem 0;
+      width: 10rem;
+    }
+  }
+
+  .commands-parent {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 3rem;
-    justify-content: flex-start;
-    align-items: center;
-  
-    .button-container {
+
+    .command-container {
       display: flex;
       flex-direction: row;
-      gap: 1rem;
-      .controls-button {
-        @include base-button;
-        width: 16rem;
-        text-wrap: nowrap;
-      }
-    }
-  
-    .commands-parent {
+      justify-content: center;
+      align-items: center;
       width: 100%;
-      display: flex;
-      flex-direction: column;
-  
-      .command-container {
+      height: fit-content;
+
+      button {
         display: flex;
-        flex-direction: row;
         justify-content: center;
         align-items: center;
-        width: 100%;
         height: fit-content;
-  
-        button {
+        width: fit-content;
+        padding: 0.2rem;
+      }
+
+      .code-pre {
+        background-color: #333;
+        padding: 0.5rem 0.25rem;
+        display: flex;
+        flex-direction: column;
+        width: 60%;
+        height: fit-content;
+        code {
           display: flex;
-          justify-content: center;
-          align-items: center;
-          height: fit-content;
-          width: fit-content;
-          padding: 0.2rem;
-        }
-  
-        .code-pre {
-          background-color: #333;
-          padding: 0.5rem 0.25rem;
-          display: flex;
-          flex-direction: column;
-          width: 60%;
-          height: fit-content;
-          code {
-            display: flex;
-            justify-content: space-between;
-          }
+          justify-content: space-between;
         }
       }
     }
   }
+}

@@ -53,10 +53,14 @@ export const fetchApiToken = async () => {
 
 export const refreshApiTokenCookie = async () => {
   const token = await fetchApiToken();
+  console.log("I got here");
 
   await setCookie({
     cookie: "apiToken",
     value: token,
     exp: 1000 * 60 * 60 * 24,
   });
+
+  console.log("Cookie set");
+  
 };

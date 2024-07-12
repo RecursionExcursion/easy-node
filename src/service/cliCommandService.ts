@@ -2,7 +2,7 @@
 
 import endpoints from "../constants/endpoints";
 import { postRequestInit } from "../lib/fetch/requestInitalizer";
-import { ScriptRequest } from "../types/scriptRequest";
+import { ScriptRequest } from "../types/apiResponse";
 
 export const postCliCommand = async (params: ScriptRequest) => {
   const res = await cliFetch(params);
